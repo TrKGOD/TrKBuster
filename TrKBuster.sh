@@ -55,16 +55,24 @@ print_verbose() {
 
 trap interrupt SIGINT
 
-count=1
+count=0
 
 while read -r tent; do
-  resultado=$(curl -s -o /dev/null -w "%{http_code}" -A "$user_agent" "$url/$tent")
+  resultado=$(curl -s -o /dev/null -w "%{http_code}" -A "$user_agent" -L "$url/$tent")
   if [ "$resultado" == "200" ]; then
+    ((count++))
     echo "Diretório Encontrado: $tent"
     output_file="$output_dir/$output_file_prefix$count$output_file_extension"
+    echo "URL alvo: $url" > "$output_file"
     echo "$tent" >> "$output_file"
+  elif [ "$resultado" != "301" ]; then
+    print_verbose "Tentando: $url/$tent [Código HTTP: $resultado]"
   fi
-  print_verbose "Tentando: $url/$tent [Código HTTP: $resultado]"
 done < "$wordlist"
 
-echo "Scan concluído. Resultados salvos em $output_file"
+if [ $count -eq 0 ]; then
+  echo "Nenhum diretório encontrado."
+  exit 0
+fi
+
+echo "Scan concluído. Foram encontrados $count diretório(s). Resultados salvos em $output_dir."
