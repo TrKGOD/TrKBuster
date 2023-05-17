@@ -58,7 +58,7 @@ trap interrupt SIGINT
 count=1
 
 while read -r tent; do
-  resultado=$(curl -s -o /dev/null -w "%{http_code}" -A "$user_agent" "$url/$tent/")
+  resultado=$(curl -s -o /dev/null -w "%{http_code}" -A "$user_agent" "$url/$tent")
   if [ "$resultado" == "200" ]; then
     echo "Diretório Encontrado: $tent"
     output_file="$output_dir/$output_file_prefix$count$output_file_extension"
