@@ -11,6 +11,11 @@ usage() {
   exit 1
 }
 
+interrupt() {
+  echo "Script interrompido. Resultados parciais salvos em $output_file"
+  exit 1
+}
+
 while getopts "w:u:v" opt; do
   case $opt in
     w)
@@ -44,6 +49,8 @@ print_verbose() {
   fi
 }
 
+trap interrupt SIGINT
+
 while read -r tent; do
   resultado=$(curl -s -o /dev/null -w "%{http_code}" -A "$user_agent" "$url/$tent/")
   if [ "$resultado" == "200" ]; then
@@ -53,4 +60,4 @@ while read -r tent; do
   print_verbose "Tentando: $url/$tent [Código HTTP: $resultado]"
 done < "$wordlist"
 
-echo "Resultados salvos em $output_file"
+echo "Scan concluído. Resultados salvos em $output_file"
