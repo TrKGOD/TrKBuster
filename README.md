@@ -1,4 +1,4 @@
-# simple-bash-directorybruteforce
+# BruteForce-de-diretorios-em-bash
 
 Para executar o programa com os exemplos anteriores, siga as instruções abaixo:
 
