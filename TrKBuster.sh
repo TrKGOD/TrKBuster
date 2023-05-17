@@ -4,7 +4,9 @@ wordlist=""
 url=""
 verbose=false
 user_agent="PriscaAutiste"
-output_file="diretorios_encontrados.txt"
+output_dir="$HOME/Desktop/diretorios_encontrados"
+output_file_prefix="diretorios_encontrados"
+output_file_extension=".txt"
 
 usage() {
   echo "Uso: $0 -w <wordlist> -u <URL> [-v]"
@@ -43,6 +45,8 @@ if [ ! -f "$wordlist" ]; then
   exit 1
 fi
 
+mkdir -p "$output_dir"
+
 print_verbose() {
   if [ "$verbose" = true ]; then
     echo "$1"
@@ -51,10 +55,13 @@ print_verbose() {
 
 trap interrupt SIGINT
 
+count=1
+
 while read -r tent; do
   resultado=$(curl -s -o /dev/null -w "%{http_code}" -A "$user_agent" "$url/$tent/")
   if [ "$resultado" == "200" ]; then
     echo "Diretório Encontrado: $tent"
+    output_file="$output_dir/$output_file_prefix$count$output_file_extension"
     echo "$tent" >> "$output_file"
   fi
   print_verbose "Tentando: $url/$tent [Código HTTP: $resultado]"
