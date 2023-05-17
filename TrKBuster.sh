@@ -4,9 +4,8 @@ wordlist=""
 url=""
 verbose=false
 user_agent="PriscaAutiste"
-output_dir="$HOME/Desktop/diretorios_encontrados"
-output_file_prefix="diretorios_encontrados"
-output_file_extension=".txt"
+output_dir="$HOME/Desktop"
+output_file="$output_dir/diretorios_encontrados.txt"
 
 usage() {
   echo "Uso: $0 -w <wordlist> -u <URL> [-v]"
@@ -55,24 +54,22 @@ print_verbose() {
 
 trap interrupt SIGINT
 
-count=0
+rm -f "$output_file"
 
 while read -r tent; do
   resultado=$(curl -s -o /dev/null -w "%{http_code}" -A "$user_agent" -L "$url/$tent")
   if [ "$resultado" == "200" ]; then
-    ((count++))
     echo "Diretório Encontrado: $tent"
-    output_file="$output_dir/$output_file_prefix$count$output_file_extension"
-    echo "URL alvo: $url" > "$output_file"
-    echo "$tent" >> "$output_file"
+    echo "$url/$tent" >> "$output_file"
   elif [ "$resultado" != "301" ]; then
     print_verbose "Tentando: $url/$tent [Código HTTP: $resultado]"
   fi
 done < "$wordlist"
 
-if [ $count -eq 0 ]; then
+if [ ! -s "$output_file" ]; then
   echo "Nenhum diretório encontrado."
+  rm -f "$output_file"
   exit 0
 fi
 
-echo "Scan concluído. Foram encontrados $count diretório(s). Resultados salvos em $output_dir."
+echo "Scan concluído. Resultados salvos em $output_file."
