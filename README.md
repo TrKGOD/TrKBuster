@@ -1,4 +1,4 @@
-BruteForce Directory in Bash
+# BruteForce Directory in Bash
 To run the program with the previous examples, follow the instructions below:
 
 Save the script in a file named TrKBuster.sh in the desired directory.
